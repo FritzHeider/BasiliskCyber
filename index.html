@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>basiliskcyber.com — AI Vendor Risk Copilot</title>
+  <meta name="description" content="Basilisk Cyber — AI Vendor Risk Copilot: continuous monitoring of third-party AI tools your company uses. Shadow AI controls, risk scoring, audit-ready answers." />
+  <meta name="theme-color" content="#0b0f1a" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Basilisk Cyber — AI Vendor Risk Copilot" />
+  <meta property="og:description" content="Continuous monitoring of third-party AI tools: risk scoring, SOC2/ISO answers, and approve/block/monitor controls." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://basiliskcyber.com/" />
+
+  <style>
+    :root{
+      --bg: #070a12;
+      --bg2:#0b0f1a;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --muted2: rgba(255,255,255,.55);
+      --accent: #7c3aed; /* purple */
+      --accent2:#22c55e; /* green */
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --shadow: 0 20px 50px rgba(0,0,0,.45);
+      --radius: 18px;
+      --radius2: 24px;
+      --max: 1120px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(1100px 700px at 20% 0%, rgba(124,58,237,.35), transparent 55%),
+        radial-gradient(900px 650px at 80% 10%, rgba(34,197,94,.25), transparent 50%),
+        radial-gradient(900px 650px at 50% 110%, rgba(245,158,11,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      overflow-x:hidden;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    .wrap{ width:min(var(--max), calc(100% - 48px)); margin:0 auto; }
+
+    /* Subtle animated grid */
+    .grid{
+      position:fixed; inset:0; pointer-events:none; opacity:.14;
+      background-image:
+        linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(closest-side at 50% 15%, black 0%, transparent 75%);
+      animation: drift 18s linear infinite;
+      transform: translateZ(0);
+    }
+    @keyframes drift { from { background-position: 0 0, 0 0; } to { background-position: 56px 56px, 56px 56px; } }
+
+    header{
+      position:sticky; top:0; z-index:20;
+      backdrop-filter: blur(14px);
+      background: rgba(7,10,18,.55);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 14px 0;
+      gap: 18px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      letter-spacing:.2px;
+    }
+    .logo{
+      width:38px; height:38px; border-radius:12px;
+      background:
+        radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.20), transparent 60%),
+        linear-gradient(135deg, rgba(124,58,237,.95), rgba(34,197,94,.80));
+      box-shadow: 0 10px 30px rgba(124,58,237,.25);
+      border: 1px solid rgba(255,255,255,.12);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-30%;
+      background: conic-gradient(from 180deg, transparent 0 50%, rgba(255,255,255,.12) 70%, transparent 100%);
+      animation: spin 7s linear infinite;
+      opacity:.65;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .brand strong{ font-size: 15px; }
+    .brand span{ font-size: 12px; color: var(--muted2); display:block; margin-top:2px; }
+    .navlinks{
+      display:flex; align-items:center; gap: 16px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .navlinks a{
+      font-size: 13px;
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+    }
+    .navlinks a:hover{
+      color: var(--text);
+      border-color: rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-size: 13px;
+      gap: 10px;
+      cursor:pointer;
+      user-select:none;
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.20); }
+    .btn.primary{
+      border-color: rgba(124,58,237,.55);
+      background: linear-gradient(135deg, rgba(124,58,237,.95), rgba(34,197,94,.75));
+      box-shadow: 0 18px 50px rgba(124,58,237,.20);
+    }
+    .btn.primary:hover{ transform: translateY(-1px) scale(1.01); }
+    .chip{
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.80);
+    }
+
+    main{ padding: 36px 0 70px; }
+    .hero{
+      padding: 54px 0 18px;
+      display:grid;
+      grid-template-columns: 1.12fr .88fr;
+      gap: 28px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .hero{ grid-template-columns: 1fr; padding-top: 36px; }
+      .nav{ flex-wrap:wrap; }
+      .navlinks{ width:100%; justify-content:space-between; }
+    }
+
+    .kicker{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      margin-bottom: 16px;
+    }
+    h1{
+      margin: 0 0 12px;
+      font-size: clamp(34px, 5.2vw, 56px);
+      line-height: 1.02;
+      letter-spacing: -0.9px;
+    }
+    .sub{
+      margin: 0 0 18px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 62ch;
+    }
+    .ctaRow{
+      display:flex; gap: 12px; flex-wrap:wrap; align-items:center;
+      margin: 18px 0 14px;
+    }
+    .microcopy{
+      color: var(--muted2);
+      font-size: 12px;
+      line-height:1.5;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .microcopy code{
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.78);
+    }
+
+    .panel{
+      border-radius: var(--radius2);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .panel .head{
+      padding: 16px 16px 10px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+    }
+    .panel .head strong{ font-size: 13px; color: rgba(255,255,255,.86); }
+    .panel .body{ padding: 14px 16px 16px; }
+    .metricRow{
+      display:flex; gap: 10px; flex-wrap:wrap; margin-bottom: 10px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      font-size: 12px;
+      color: rgba(255,255,255,.80);
+    }
+    .dot{ width:8px; height:8px; border-radius:999px; background: var(--accent2); box-shadow: 0 0 0 6px rgba(34,197,94,.10); }
+    .dot.warn{ background: var(--warn); box-shadow: 0 0 0 6px rgba(245,158,11,.10); }
+    .dot.danger{ background: var(--danger); box-shadow: 0 0 0 6px rgba(239,68,68,.10); }
+
+    .mock{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(255,255,255,.78);
+      line-height:1.55;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .mock .row{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 8px 8px;
+      border-bottom: 1px dashed rgba(255,255,255,.10);
+      gap: 12px;
+    }
+    .mock .row:last-child{ border-bottom:0; }
+    .tag{
+      display:inline-flex; align-items:center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      font-size: 11px;
+      color: rgba(255,255,255,.80);
+    }
+    .tag.good{ border-color: rgba(34,197,94,.45); }
+    .tag.mid{ border-color: rgba(245,158,11,.5); }
+    .tag.bad{ border-color: rgba(239,68,68,.45); }
+
+    section{ padding: 24px 0; }
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .card{
+      grid-column: span 4;
+      border-radius: var(--radius);
+      padding: 16px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 14px 40px rgba(0,0,0,.25);
+      position:relative;
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:-40%;
+      background: radial-gradient(closest-side, rgba(124,58,237,.18), transparent 70%);
+      opacity:.55;
+      transform: translate3d(0,0,0);
+    }
+    .card > *{ position:relative; }
+    .card h3{ margin: 2px 0 8px; font-size: 15px; letter-spacing: -0.2px; }
+    .card p{ margin: 0; color: var(--muted); font-size: 13px; line-height:1.55; }
+    .card .icon{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      display:flex; align-items:center; justify-content:center;
+      margin-bottom: 10px;
+    }
+    .icon svg{ width:18px; height:18px; opacity:.9; }
+
+    @media (max-width: 980px){
+      .card{ grid-column: span 6; }
+    }
+    @media (max-width: 620px){
+      .card{ grid-column: span 12; }
+    }
+
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 12px;
+    }
+    @media (max-width: 980px){ .split{ grid-template-columns:1fr; } }
+
+    .quote{
+      border-radius: var(--radius);
+      padding: 16px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.82);
+      line-height:1.6;
+    }
+    .quote strong{ color: rgba(255,255,255,.92); }
+    .quote .by{
+      margin-top: 10px;
+      color: var(--muted2);
+      font-size: 12px;
+    }
+
+    .pricing{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin-top: 12px;
+    }
+    @media (max-width: 980px){ .pricing{ grid-template-columns: 1fr; } }
+
+    .priceCard{
+      border-radius: var(--radius2);
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 18px 55px rgba(0,0,0,.30);
+      position:relative;
+      overflow:hidden;
+    }
+    .priceCard.featured{
+      border-color: rgba(124,58,237,.55);
+      background: linear-gradient(135deg, rgba(124,58,237,.20), rgba(34,197,94,.10));
+    }
+    .priceCard h3{ margin: 0 0 6px; font-size: 15px; }
+    .priceCard .amt{
+      font-size: 28px;
+      letter-spacing: -0.6px;
+      margin: 8px 0 10px;
+    }
+    .priceCard .amt small{
+      font-size: 12px;
+      color: var(--muted2);
+      margin-left: 6px;
+      font-weight: 500;
+    }
+    .priceCard ul{
+      margin: 10px 0 0;
+      padding: 0 0 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.6;
+    }
+    .priceCard li{ margin: 6px 0; }
+    .badge{
+      position:absolute;
+      top: 14px; right: 14px;
+      font-size: 11px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.80);
+    }
+
+    .formCard{
+      border-radius: var(--radius2);
+      padding: 18px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 18px 55px rgba(0,0,0,.28);
+    }
+    form{ display:grid; gap: 10px; margin-top: 12px; }
+    label{ font-size: 12px; color: var(--muted2); }
+    input, textarea{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      padding: 12px 12px;
+      font-size: 13px;
+      outline:none;
+    }
+    input:focus, textarea:focus{
+      border-color: rgba(124,58,237,.65);
+      box-shadow: 0 0 0 4px rgba(124,58,237,.18);
+    }
+    textarea{ min-height: 96px; resize: vertical; }
+    .formRow{ display:grid; grid-template-columns:1fr 1fr; gap: 10px; }
+    @media (max-width: 620px){ .formRow{ grid-template-columns:1fr; } }
+
+    footer{
+      padding: 28px 0 40px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: var(--muted2);
+      font-size: 12px;
+    }
+    .footerRow{
+      display:flex; justify-content:space-between; gap: 18px; flex-wrap:wrap; align-items:center;
+    }
+    .fineprint{ max-width: 90ch; line-height:1.6; }
+    .tinyLinks{ display:flex; gap: 12px; flex-wrap:wrap; }
+    .tinyLinks a{ color: var(--muted); }
+    .tinyLinks a:hover{ color: var(--text); }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .grid, .logo:after{ animation:none !important; }
+      .btn{ transition:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid" aria-hidden="true"></div>
+
+  <header>
+    <div class="wrap">
+      <div class="nav">
+        <a class="brand" href="#top" aria-label="Basilisk Cyber home">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <strong>Basilisk Cyber</strong>
+            <span>AI Vendor Risk Copilot</span>
+          </div>
+        </a>
+
+        <nav class="navlinks" aria-label="Primary navigation">
+          <a href="#why">Why it wins</a>
+          <a href="#features">Core features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#demo">Request demo</a>
+          <a class="btn primary" href="#demo" title="Request a demo">
+            <span>Get a demo</span>
+            <span class="chip">~15 min</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="wrap">
+      <div class="hero">
+        <div>
+          <div class="kicker">
+            <span class="chip">Continuous AI tool monitoring</span>
+            <span class="chip">Audit-ready answers</span>
+            <span class="chip">Approve / Block / Monitor</span>
+          </div>
+
+          <h1>Kill Shadow AI.<br/>Stay audit-ready.</h1>
+
+          <p class="sub">
+            <strong>AI Vendor Risk Copilot</strong> continuously monitors the third-party AI tools your company uses
+            (LLMs, plugins, SaaS AI) and turns “we think we’re compliant” into <em>provable</em> controls.
+            Because auditors don’t accept vibes.
+          </p>
+
+          <div class="ctaRow">
+            <a class="btn primary" href="#demo">Request a demo</a>
+            <a class="btn" href="#pricing">See pricing</a>
+            <span class="microcopy">
+              <span>Built for <code>Compliance</code> + <code>Security</code> + <code>Procurement</code></span>
+              <span>•</span>
+              <span>Mid-market → Enterprise</span>
+            </span>
+          </div>
+
+          <div class="microcopy">
+            <span>What it is:</span>
+            <span class="chip">Continuous monitoring of third-party AI tools</span>
+            <span>Who pays:</span>
+            <span class="chip">Compliance & risk teams</span>
+            <span>Edge:</span>
+            <span class="chip">Painkiller, not a vitamin</span>
+          </div>
+        </div>
+
+        <aside class="panel" aria-label="Product preview">
+          <div class="head">
+            <strong>Live risk view (sample)</strong>
+            <span class="chip">Last sync: 2m</span>
+          </div>
+          <div class="body">
+            <div class="metricRow" aria-label="Status metrics">
+              <span class="pill"><span class="dot"></span> Approved: 18</span>
+              <span class="pill"><span class="dot warn"></span> Monitor: 7</span>
+              <span class="pill"><span class="dot danger"></span> Blocked: 3</span>
+            </div>
+
+            <div class="mock" role="img" aria-label="Example table showing tools and risk scores">
+              <div class="row">
+                <span>Browser Extension: “AI Writer Pro”</span>
+                <span class="tag mid">Risk 62</span>
+              </div>
+              <div class="row">
+                <span>SaaS: “TeamGPT Workspace”</span>
+                <span class="tag good">Risk 28</span>
+              </div>
+              <div class="row">
+                <span>LLM API: “Vendor-X Inference”</span>
+                <span class="tag mid">Risk 55</span>
+              </div>
+              <div class="row">
+                <span>Plugin: “CRM Auto-Responder”</span>
+                <span class="tag bad">Risk 83</span>
+              </div>
+            </div>
+
+            <p style="margin:12px 0 0; color: rgba(255,255,255,.70); font-size: 12px; line-height:1.55;">
+              Risk scores reflect <strong>data leakage exposure</strong>, <strong>training-use policy</strong>,
+              and <strong>jurisdiction</strong>—mapped into controls your auditors recognize.
+            </p>
+          </div>
+        </aside>
+      </div>
+
+      <section id="why" aria-label="Why it wins">
+        <div class="kicker">
+          <span class="chip">Why it wins</span>
+          <span class="chip">Shadow AI = Shadow IT 2.0</span>
+        </div>
+
+        <div class="split">
+          <div class="quote">
+            <strong>Shadow AI is the new shadow IT</strong>—and auditors are catching up.
+            Basilisk Cyber closes the gap between “tool sprawl” and “control evidence” with continuous monitoring
+            and push-button audit answers.
+            <div class="by">Translation: fewer surprises, fewer fire drills, fewer 2am Slack threads.</div>
+          </div>
+
+          <div class="quote">
+            <strong>Compliance wants proof. Security wants control.</strong>
+            Procurement wants to stop paying for 12 versions of the same AI product.
+            Basilisk is the shared source of truth—and the workflow to act on it.
+            <div class="by">Outcome: tighter risk posture + cleaner spend + calmer audits.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" aria-label="Core features">
+        <div class="kicker">
+          <span class="chip">Core features</span>
+          <span class="chip">Evidence, not opinions</span>
+        </div>
+
+        <div class="cards">
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M8 7h8M8 12h8M8 17h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M6 3h12a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Scan your real-world usage</h3>
+            <p>
+              Correlate <strong>SSO</strong>, <strong>browser extensions</strong>, and <strong>expense data</strong>
+              to discover AI tools people actually use—not just what’s in a spreadsheet.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+              </svg>
+            </div>
+            <h3>Risk scoring that maps to reality</h3>
+            <p>
+              Score vendors on <strong>data leakage</strong>, <strong>training use</strong>, and <strong>jurisdiction</strong>.
+              Outputs are phrased for <em>controls</em> and <em>evidence</em>, not marketing.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M7 12l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <h3>SOC2 / ISO answers on demand</h3>
+            <p>
+              Generate audit-ready responses and attach supporting evidence.
+              Turn “we’ll get back to you” into “here it is” in minutes.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M7 6v0M7 12v0M7 18v0" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Approve / Block / Monitor workflow</h3>
+            <p>
+              One place to decide: approved, blocked, or under observation—with ownership, timestamps, and rationale.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M21 12a9 9 0 1 1-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M21 3v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Continuous monitoring (not quarterly panic)</h3>
+            <p>
+              Drift happens weekly. Basilisk watches continuously and alerts when usage, terms, or risk posture changes.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Compliance painkiller, not a vitamin</h3>
+            <p>
+              Fewer audits-as-emergencies. Cleaner vendor posture. Less “who approved this?” energy.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="pricing" aria-label="Pricing">
+        <div class="kicker">
+          <span class="chip">Pricing</span>
+          <span class="chip">$2k–$10k / year</span>
+        </div>
+
+        <div class="pricing">
+          <div class="priceCard">
+            <h3>Starter</h3>
+            <div class="amt">$2k<small>/ year</small></div>
+            <ul>
+              <li>AI tool discovery (baseline)</li>
+              <li>Risk scoring (standard model)</li>
+              <li>Approve / Block / Monitor workflow</li>
+              <li>Email support</li>
+            </ul>
+          </div>
+
+          <div class="priceCard featured">
+            <div class="badge">Most picked</div>
+            <h3>Business</h3>
+            <div class="amt">$6k<small>/ year</small></div>
+            <ul>
+              <li>SSO + extension + expense correlation</li>
+              <li>SOC2 / ISO answer generator</li>
+              <li>Evidence attachments + exports</li>
+              <li>Slack / Teams alerts</li>
+            </ul>
+          </div>
+
+          <div class="priceCard">
+            <h3>Enterprise</h3>
+            <div class="amt">$10k<small>+ / year</small></div>
+            <ul>
+              <li>Custom risk framework & scoring</li>
+              <li>Org-wide policy mapping</li>
+              <li>Custom integrations & SSO</li>
+              <li>Dedicated onboarding</li>
+            </ul>
+          </div>
+        </div>
+
+        <p style="margin: 12px 0 0; color: var(--muted2); font-size: 12px; line-height:1.6;">
+          Note: Pricing is intentionally simple. If you have 10,000 employees and 300 AI tools,
+          we’ll structure it like adults.
+        </p>
+      </section>
+
+      <section id="demo" aria-label="Request a demo">
+        <div class="kicker">
+          <span class="chip">Request demo</span>
+          <span class="chip">Turn sprawl into control</span>
+        </div>
+
+        <div class="split">
+          <div class="formCard">
+            <h2 style="margin:0 0 6px; font-size: 18px; letter-spacing:-0.3px;">Get a demo</h2>
+            <p style="margin:0; color: var(--muted); font-size: 13px; line-height:1.6;">
+              Share basics and we’ll follow up. This form is static HTML; wire it to your backend or
+              a form handler (Cloudflare Pages Functions, Workers, Formspree, etc.).
+            </p>
+
+            <form onsubmit="return handleSubmit(event)">
+              <div class="formRow">
+                <div>
+                  <label for="name">Name</label>
+                  <input id="name" name="name" autocomplete="name" placeholder="Ada Lovelace" required />
+                </div>
+                <div>
+                  <label for="email">Work email</label>
+                  <input id="email" name="email" type="email" autocomplete="email" placeholder="ada@company.com" required />
+                </div>
+              </div>
+
+              <div class="formRow">
+                <div>
+                  <label for="company">Company</label>
+                  <input id="company" name="company" autocomplete="organization" placeholder="Company, Inc." required />
+                </div>
+                <div>
+                  <label for="size">Company size</label>
+                  <input id="size" name="size" placeholder="e.g., 200–5000 employees" />
+                </div>
+              </div>
+
+              <div>
+                <label for="notes">What are you trying to control?</label>
+                <textarea id="notes" name="notes" placeholder="Shadow AI usage, vendor risk posture, audit prep, procurement approval flow..."></textarea>
+              </div>
+
+              <button class="btn primary" type="submit">Send request</button>
+              <div id="status" class="microcopy" aria-live="polite" style="margin-top:6px;"></div>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="head">
+              <strong>What you’ll get in the demo</strong>
+              <span class="chip">15 minutes</span>
+            </div>
+            <div class="body">
+              <ul style="margin:0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height:1.7;">
+                <li>How Basilisk discovers AI tools via SSO, extensions, and spend</li>
+                <li>Risk scoring that covers leakage, training use, and jurisdiction</li>
+                <li>Approve / Block / Monitor workflow with audit evidence</li>
+                <li>How to generate SOC2 / ISO answers without duct tape</li>
+                <li>Rollout plan: 30 days to “auditor-proof”</li>
+              </ul>
+
+              <div style="margin-top:14px;">
+                <div class="mock">
+                  <div class="row">
+                    <span>Policy: “No sensitive data to non-approved AI”</span>
+                    <span class="tag good">Enforced</span>
+                  </div>
+                  <div class="row">
+                    <span>Control evidence: access + approvals + logs</span>
+                    <span class="tag good">Exportable</span>
+                  </div>
+                  <div class="row">
+                    <span>Audit response: SOC2 CC6.1 (sample)</span>
+                    <span class="tag mid">Auto-draft</span>
+                  </div>
+                </div>
+              </div>
+
+              <p style="margin:12px 0 0; color: var(--muted2); font-size: 12px; line-height:1.6;">
+                Basilisk Cyber is built to be deployed fast and explained faster.
+                The goal is control + proof, not a dashboard museum.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="footerRow">
+        <div class="fineprint">
+          <strong style="color: rgba(255,255,255,.85);">Basilisk Cyber</strong> — AI Vendor Risk Copilot.<br/>
+          © <span id="year"></span> basiliskcyber.com. All rights reserved.
+          <span style="display:block; margin-top:6px;">
+            Security note: This is a marketing page. No confidential data should be submitted here unless you wire the form to a secure backend.
+          </span>
+        </div>
+
+        <div class="tinyLinks" aria-label="Footer links">
+          <a href="#top">Top</a>
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#demo">Demo</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Set year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Static-page form handler: simulate success and provide a copyable payload.
+    // Replace with real POST to your backend or a form service.
+    function handleSubmit(e){
+      e.preventDefault();
+      const form = e.target;
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      const status = document.getElementById("status");
+      const payload = {
+        ...data,
+        page: "basiliskcyber.com",
+        product: "AI Vendor Risk Copilot",
+        submitted_at: new Date().toISOString()
+      };
+
+      // Simulate "sent" (client-side only)
+      status.innerHTML =
+        '✅ Request captured (demo mode). ' +
+        '<span style="color: rgba(255,255,255,.55)">Copy payload:</span> ' +
+        '<button type="button" class="btn" style="padding:6px 10px; font-size:12px; margin-left:6px;" onclick="copyPayload()">Copy</button>' +
+        '<div style="margin-top:8px; white-space:pre-wrap; word-break:break-word; font-family: var(--mono); font-size:11px; padding:10px; border-radius:14px; border:1px solid rgba(255,255,255,.10); background: rgba(0,0,0,.22);">' +
+        escapeHtml(JSON.stringify(payload, null, 2)) +
+        '</div>';
+
+      window.__basiliskPayload = payload;
+      form.reset();
+      return false;
+    }
+
+    function copyPayload(){
+      const payload = window.__basiliskPayload ? JSON.stringify(window.__basiliskPayload, null, 2) : "";
+      if(!payload) return;
+      navigator.clipboard.writeText(payload).then(() => {
+        const status = document.getElementById("status");
+        status.insertAdjacentHTML("afterbegin", '<div style="margin-bottom:8px; color: rgba(34,197,94,.95);">Copied to clipboard.</div>');
+      }).catch(() => {});
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+  </script>
+</body>
+</html>
